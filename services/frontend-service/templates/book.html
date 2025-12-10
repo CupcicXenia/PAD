@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование отеля</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6">Бронирование {{ hotel_name }}</h1>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="max-w-lg mx-auto mb-4">
+                    {% for message in messages %}
+                        <div class="bg-red-100 text-red-700 p-4 rounded">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <form action="/confirmation" method="POST" class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+            <input type="hidden" name="hotel_id" value="{{ hotel_id }}">
+            <input type="hidden" name="hotel_name" value="{{ hotel_name }}">
+            <input type="hidden" name="check_in" value="{{ check_in }}">
+            <input type="hidden" name="check_out" value="{{ check_out }}">
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Тип номера</label>
+                <select name="room_type" class="w-full p-2 border rounded" required>
+                    {% for room in room_types %}
+                        <option value="{{ room.room_type }}">
+                            {{ room.name }} - ${{ "%.2f"|format(room.base_price) }}/ночь
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Тарифный план</label>
+                <select name="tariff" class="w-full p-2 border rounded" required>
+                    {% for tariff in tariffs %}
+                        <option value="{{ tariff.tariff_type }}">
+                            {{ tariff.name }} - {{ tariff.description }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Количество номеров</label>
+                <input type="number" name="quantity" min="1" max="10" value="1" class="w-full p-2 border rounded" required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Дополнительные услуги</label>
+                <div class="space-y-2">
+                    {% for service in extra_services %}
+                    <label class="flex items-center">
+                        <input type="checkbox" name="{{ service.service_code }}" class="mr-2">
+                        <span>{{ service.name }} (+${{ "%.2f"|format(service.price) }}{% if service.per_day %}/день{% endif %})</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="mb-4 border-t pt-4">
+                <h3 class="font-semibold mb-2">Данные гостя</h3>
+                <div class="mb-3">
+                    <label class="block text-gray-700 mb-1">Имя</label>
+                    <input type="text" name="guest_name" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="mb-3">
+                    <label class="block text-gray-700 mb-1">Email</label>
+                    <input type="email" name="guest_email" class="w-full p-2 border rounded" required>
+                </div>
+                <div class="mb-3">
+                    <label class="block text-gray-700 mb-1">Телефон</label>
+                    <input type="tel" name="guest_phone" class="w-full p-2 border rounded" placeholder="+7 999 123-45-67">
+                </div>
+            </div>
+            
+            <div class="mb-4 bg-gray-50 p-4 rounded">
+                <p class="text-sm text-gray-600">
+                    <strong>Даты:</strong> {{ check_in }} - {{ check_out }} ({{ days }} {{ 'ночь' if days == 1 else 'ночи' if days < 5 else 'ночей' }})
+                </p>
+            </div>
+            
+            <button type="submit" class="w-full bg-green-500 text-white p-3 rounded hover:bg-green-600 font-semibold">
+                Забронировать
+            </button>
+        </form>
+    </div>
+</body>
+</html>
+

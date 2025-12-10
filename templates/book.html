@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бронирование отеля</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6">Бронирование {{ hotel_name }}</h1>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <form action="{{ url_for('book', hotel_type=hotel_type, hotel_name=hotel_name, check_in=check_in, check_out=check_out) }}" method="POST" class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+            <div class="mb-4">
+                <label class="block text-gray-700">Тип номера</label>
+                <select name="room_type" class="w-full p-2 border rounded" required>
+                    {% for room in room_types %}
+                        <option value="{{ room }}">{{ 'Стандартный' if room == 'Standard' else 'Люкс' if room == 'Luxury' else 'Апартаменты' }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Тарифный план</label>
+                <select name="tariff" class="w-full p-2 border rounded" required>
+                    {% for tariff in tariffs %}
+                        <option value="{{ tariff }}">{{ 'Гибкий' if tariff == 'Flexible' else 'Невозвратный' }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Валюта</label>
+                <select name="currency" class="w-full p-2 border rounded" required>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Размер группы</label>
+                <input type="number" name="group_size" class="w-full p-2 border rounded" min="1" value="1" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Дополнительные услуги</label>
+                <div class="flex flex-col">
+                    <label><input type="checkbox" name="minibar"> Мини-бар ($50)</label>
+                    <label><input type="checkbox" name="late_checkout"> Поздний выезд ($30)</label>
+                    <label><input type="checkbox" name="breakfast"> Завтрак</label>
+                    <label><input type="checkbox" name="transfer"> Трансфер из аэропорта</label>
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Подтвердить бронирование</button>
+        </form>
+    </div>
+</body>
+</html>

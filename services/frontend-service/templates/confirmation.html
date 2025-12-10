@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение бронирования</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6 text-green-600">✓ Бронирование подтверждено!</h1>
+        
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white p-6 rounded-lg shadow-md mb-4">
+                <h2 class="text-xl font-semibold mb-4">Детали бронирования</h2>
+                
+                <div class="border-t pt-4 mb-4">
+                    <p class="text-gray-600 text-sm">Отель</p>
+                    <p class="font-semibold">{{ hotel_name }}</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-gray-600 text-sm">Тип номера</p>
+                        <p>{{ room_type }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 text-sm">Количество</p>
+                        <p>{{ quantity }}</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-gray-600 text-sm">Дата заезда</p>
+                        <p>{{ check_in }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600 text-sm">Дата выезда</p>
+                        <p>{{ check_out }}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-gray-600 text-sm">Тариф</p>
+                    <p>{{ tariff }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <p class="text-gray-600 text-sm">Гость</p>
+                    <p class="font-semibold">{{ guest_name }}</p>
+                    <p class="text-sm">{{ guest_email }}</p>
+                </div>
+                
+                {% if price_data %}
+                <div class="border-t pt-4 mb-4">
+                    <p class="text-gray-600 text-sm mb-2">Расчет стоимости</p>
+                    <div class="space-y-1 text-sm">
+                        <div class="flex justify-between">
+                            <span>Базовая цена за ночь:</span>
+                            <span>${{ "%.2f"|format(price_data.base_price) }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Количество ночей:</span>
+                            <span>{{ price_data.days }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Тариф ({{ price_data.tariff }}):</span>
+                            <span>×{{ price_data.tariff_multiplier }}</span>
+                        </div>
+                        {% if price_data.extras %}
+                        <div class="border-t pt-2 mt-2">
+                            <p class="font-semibold mb-1">Дополнительные услуги:</p>
+                            {% for extra in price_data.extras %}
+                            <div class="flex justify-between pl-4">
+                                <span>{{ extra.name }}:</span>
+                                <span>${{ "%.2f"|format(extra.price) }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="border-t pt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xl font-semibold">Итого:</span>
+                        <span class="text-2xl font-bold text-green-600">${{ "%.2f"|format(total_price) }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-green-50 p-6 rounded-lg mb-4">
+                <p class="text-center text-gray-700">
+                    📧 Подтверждение отправлено на email: {{ guest_email }}<br>
+                    📱 Уведомление отправлено
+                </p>
+            </div>
+            
+            <div class="text-center">
+                <a href="/" class="inline-block bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600">
+                    Вернуться на главную
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

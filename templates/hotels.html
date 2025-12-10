@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доступные отели</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6">Доступные отели</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for hotel in hotels %}
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold">{{ hotel.name }}</h2>
+                <p class="text-gray-600">Тип: {{ 'Городской' if hotel.type == 'City' else 'Курортный' }}</p>
+                <a href="{{ url_for('book', hotel_type=hotel.type, hotel_name=hotel.name, check_in=check_in, check_out=check_out) }}"
+                   class="mt-2 inline-block bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Забронировать</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

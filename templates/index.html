@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система бронирования отелей</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6">Система бронирования отелей</h1>
+        <form action="/search" method="POST" class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+            <div class="mb-4">
+                <label class="block text-gray-700">Город</label>
+                <input type="text" name="city" class="w-full p-2 border rounded" placeholder="Введите город" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Дата заезда</label>
+                <input type="date" name="check_in" class="w-full p-2 border rounded" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Дата выезда</label>
+                <input type="date" name="check_out" class="w-full p-2 border rounded" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Найти отели</button>
+        </form>
+    </div>
+</body>
+</html>

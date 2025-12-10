@@ -1,0 +1,171 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: hotel_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hotel-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: hotel_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hotel-network
+
+  # Hotel Search Service
+  hotel-search-service:
+    build:
+      context: ./services/hotel-search-service
+      dockerfile: Dockerfile
+    container_name: hotel_search_service
+    environment:
+      DB_HOST: postgres
+      DB_NAME: hotel_search_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_PORT: 5432
+    ports:
+      - "5001:5001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  # Booking Service
+  booking-service:
+    build:
+      context: ./services/booking-service
+      dockerfile: Dockerfile
+    container_name: hotel_booking_service
+    environment:
+      DB_HOST: postgres
+      DB_NAME: booking_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "5002:5002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  # Room Service
+  room-service:
+    build:
+      context: ./services/room-service
+      dockerfile: Dockerfile
+    container_name: hotel_room_service
+    environment:
+      DB_HOST: postgres
+      DB_NAME: room_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_PORT: 5432
+    ports:
+      - "5003:5003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    container_name: hotel_notification_service
+    environment:
+      DB_HOST: postgres
+      DB_NAME: notification_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_PORT: 5432
+    ports:
+      - "5004:5004"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  # FastAPI API Gateway
+  api-gateway:
+    build:
+      context: ./services/api-gateway-fastapi
+      dockerfile: Dockerfile
+    container_name: hotel_api_gateway
+    environment:
+      HOTEL_SEARCH_SERVICE: http://hotel-search-service:5001
+      BOOKING_SERVICE: http://booking-service:5002
+      ROOM_SERVICE: http://room-service:5003
+      NOTIFICATION_SERVICE: http://notification-service:5004
+    ports:
+      - "8000:8000"
+    depends_on:
+      - hotel-search-service
+      - booking-service
+      - room-service
+      - notification-service
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+  # Frontend Service
+  frontend-service:
+    build:
+      context: ./services/frontend-service
+      dockerfile: Dockerfile
+    container_name: hotel_frontend_service
+    environment:
+      SECRET_KEY: supersecretkey
+      API_GATEWAY: http://api-gateway:8000
+    ports:
+      - "5000:5000"
+    depends_on:
+      - api-gateway
+    networks:
+      - hotel-network
+    restart: unless-stopped
+
+networks:
+  hotel-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система бронирования отелей - Микросервисы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-2">Система бронирования отелей</h1>
+        <p class="text-center text-gray-600 mb-6">Микросервисная архитектура (FastAPI + Flask)</p>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="max-w-lg mx-auto mb-4">
+                    {% for message in messages %}
+                        <div class="bg-red-100 text-red-700 p-4 rounded">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <form action="/search" method="POST" class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Город</label>
+                <input type="text" name="city" class="w-full p-2 border rounded" placeholder="Москва, Санкт-Петербург, Казань..." required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Дата заезда</label>
+                <input type="date" name="check_in" class="w-full p-2 border rounded" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Дата выезда</label>
+                <input type="date" name="check_out" class="w-full p-2 border rounded" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
+                Найти отели
+            </button>
+        </form>
+        
+        <div class="max-w-lg mx-auto mt-8 bg-blue-50 p-4 rounded-lg">
+            <h2 class="font-bold text-lg mb-2">Архитектура микросервисов:</h2>
+            <ul class="list-disc list-inside text-sm text-gray-700">
+                <li>Frontend Service (порт 5000) - веб-интерфейс (Flask)</li>
+                <li>API Gateway (порт 8000) - маршрутизация (FastAPI)</li>
+                <li>Hotel Search Service (порт 5001) - поиск отелей</li>
+                <li>Booking Service (порт 5002) - бронирование</li>
+                <li>Room Service (порт 5003) - типы номеров и цены</li>
+                <li>Notification Service (порт 5004) - уведомления</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+

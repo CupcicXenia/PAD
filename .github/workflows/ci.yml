@@ -1,0 +1,150 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test-hotel-search:
+    name: Test Hotel Search Service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        working-directory: ./services/hotel-search-service
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run tests
+        working-directory: ./services/hotel-search-service
+        run: |
+          python -m pytest test_app.py -v
+
+  test-booking:
+    name: Test Booking Service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        working-directory: ./services/booking-service
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run tests
+        working-directory: ./services/booking-service
+        run: |
+          python -m pytest test_app.py -v
+
+  test-room:
+    name: Test Room Service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        working-directory: ./services/room-service
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run tests
+        working-directory: ./services/room-service
+        run: |
+          python -m pytest test_app.py -v
+
+  test-notification:
+    name: Test Notification Service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        working-directory: ./services/notification-service
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run tests
+        working-directory: ./services/notification-service
+        run: |
+          python -m pytest test_app.py -v
+
+  test-api-gateway:
+    name: Test API Gateway
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        working-directory: ./services/api-gateway-fastapi
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run tests
+        working-directory: ./services/api-gateway-fastapi
+        run: |
+          python -m pytest test_app.py -v
+
+  test-frontend:
+    name: Test Frontend Service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        working-directory: ./services/frontend-service
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Run tests
+        working-directory: ./services/frontend-service
+        run: |
+          python -m pytest test_app.py -v
+
+  docker-build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [test-hotel-search, test-booking, test-room, test-notification, test-api-gateway, test-frontend]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build all services
+        run: |
+          docker-compose build
+      
+      - name: Verify docker-compose
+        run: |
+          docker-compose config
+

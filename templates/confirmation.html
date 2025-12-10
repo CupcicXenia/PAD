@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение бронирования</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6">Подтверждение бронирования</h1>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="bg-green-100 text-green-700 p-4 rounded mb-4">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            {% for booking in bookings %}
+                <div class="mb-4">
+                    <p><strong>ID бронирования:</strong> {{ booking[0] }}</p>
+                    <p><strong>Отель:</strong> {{ booking[1] }}</p>
+                    <p><strong>Тип номера:</strong> {{ 'Стандартный' if booking[2] == 'Standard' else 'Люкс' if booking[2] == 'Luxury' else 'Апартаменты' }}</p>
+                    <p><strong>Дата заезда:</strong> {{ booking[3] }}</p>
+                    <p><strong>Дата выезда:</strong> {{ booking[4] }}</p>
+                    <p><strong>Услуги:</strong> {{ booking[5] }}</p>
+                    <p><strong>Итоговая стоимость:</strong> ${{ booking[6] }}</p>
+                    <p><strong>Статус:</strong> {{ booking[7] }}</p>
+                </div>
+            {% endfor %}
+            <a href="/" class="inline-block bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Вернуться на главную</a>
+        </div>
+    </div>
+</body>
+</html>
