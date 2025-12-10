@@ -33,7 +33,7 @@ class TestRoomService(unittest.TestCase):
         mock_conn.cursor.return_value = mock_cur
         mock_db.return_value = mock_conn
 
-        response = self.app.get('/api/room-types')
+        response = self.app.get('/api/rooms/types')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(len(data), 2)
@@ -53,7 +53,7 @@ class TestRoomService(unittest.TestCase):
         mock_conn.cursor.return_value = mock_cur
         mock_db.return_value = mock_conn
 
-        response = self.app.get('/api/pricing-rules')
+        response = self.app.get('/api/pricing/tariffs')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(len(data), 2)
@@ -73,7 +73,7 @@ class TestRoomService(unittest.TestCase):
         mock_conn.cursor.return_value = mock_cur
         mock_db.return_value = mock_conn
 
-        response = self.app.get('/api/extra-services')
+        response = self.app.get('/api/services/extra')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(len(data), 2)

@@ -26,7 +26,8 @@ class TestBookingService(unittest.TestCase):
         # Mock database connection
         mock_conn = MagicMock()
         mock_cur = MagicMock()
-        mock_cur.fetchone.return_value = {'id': 1}
+        # Mock availability check - return available_count
+        mock_cur.fetchone.return_value = {'available_count': 10}
         mock_conn.cursor.return_value = mock_cur
         mock_db.return_value = mock_conn
 
@@ -36,20 +37,19 @@ class TestBookingService(unittest.TestCase):
             'room_type': 'Standard',
             'check_in': '2025-12-15',
             'check_out': '2025-12-20',
-            'guest_name': 'John Doe',
-            'guest_email': 'john@example.com',
-            'total_price': 500.0
+            'total_price': 500.0,
+            'quantity': 1
         }
-        
+
         response = self.app.post(
             '/api/bookings',
             data=json.dumps(payload),
             content_type='application/json'
         )
-        
+
         self.assertEqual(response.status_code, 201)
         data = json.loads(response.data)
-        self.assertIn('booking_id', data)
+        self.assertIn('booking_ids', data)
         self.assertIn('message', data)
 
     @patch('app.get_db_connection')
@@ -65,8 +65,7 @@ class TestBookingService(unittest.TestCase):
             'room_type': 'Standard',
             'check_in': '2025-12-15',
             'check_out': '2025-12-20',
-            'guest_name': 'John Doe',
-            'guest_email': 'john@example.com',
+            'services': '[]',  # JSON string
             'total_price': 500.0,
             'status': 'confirmed'
         }
@@ -77,7 +76,7 @@ class TestBookingService(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['id'], 1)
-        self.assertEqual(data['guest_name'], 'John Doe')
+        self.assertEqual(data['hotel_name'], 'Test Hotel')
 
     @patch('app.get_db_connection')
     def test_get_booking_not_found(self, mock_db):

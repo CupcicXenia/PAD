@@ -36,13 +36,13 @@ class TestNotificationService(unittest.TestCase):
             'notification_type': 'email',
             'message': 'Your booking is confirmed'
         }
-        
+
         response = self.app.post(
-            '/api/notifications',
+            '/api/notifications/send',
             data=json.dumps(payload),
             content_type='application/json'
         )
-        
+
         self.assertEqual(response.status_code, 201)
         data = json.loads(response.data)
         self.assertIn('notification_id', data)
@@ -50,28 +50,29 @@ class TestNotificationService(unittest.TestCase):
 
     @patch('app.get_db_connection')
     def test_get_notifications_by_booking(self, mock_db):
-        """Test getting notifications by booking ID"""
+        """Test sending booking confirmation notification"""
         # Mock database connection
         mock_conn = MagicMock()
         mock_cur = MagicMock()
-        mock_cur.fetchall.return_value = [
-            {
-                'id': 1,
-                'booking_id': 1,
-                'recipient': 'john@example.com',
-                'notification_type': 'email',
-                'message': 'Booking confirmed',
-                'status': 'sent'
-            }
-        ]
+        mock_cur.fetchone.return_value = {'id': 1}
         mock_conn.cursor.return_value = mock_cur
         mock_db.return_value = mock_conn
 
-        response = self.app.get('/api/notifications/booking/1')
-        self.assertEqual(response.status_code, 200)
+        payload = {
+            'email': 'john@example.com',
+            'hotel_name': 'Test Hotel',
+            'check_in': '2025-12-15',
+            'check_out': '2025-12-20'
+        }
+
+        response = self.app.post(
+            '/api/notifications/booking/1',
+            data=json.dumps(payload),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 201)
         data = json.loads(response.data)
-        self.assertEqual(len(data), 1)
-        self.assertEqual(data[0]['booking_id'], 1)
+        self.assertIn('notification_id', data)
 
 
 if __name__ == '__main__':
