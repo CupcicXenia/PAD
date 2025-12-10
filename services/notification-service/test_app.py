@@ -33,7 +33,7 @@ class TestNotificationService(unittest.TestCase):
         payload = {
             'booking_id': 1,
             'recipient': 'john@example.com',
-            'notification_type': 'email',
+            'type': 'email',
             'message': 'Your booking is confirmed'
         }
 
@@ -43,10 +43,10 @@ class TestNotificationService(unittest.TestCase):
             content_type='application/json'
         )
 
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertIn('notification_id', data)
-        self.assertIn('message', data)
+        self.assertIn('status', data)
 
     @patch('app.get_db_connection')
     def test_get_notifications_by_booking(self, mock_db):
@@ -70,9 +70,10 @@ class TestNotificationService(unittest.TestCase):
             data=json.dumps(payload),
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
-        self.assertIn('notification_id', data)
+        self.assertIn('booking_id', data)
+        self.assertIn('notifications', data)
 
 
 if __name__ == '__main__':

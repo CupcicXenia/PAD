@@ -27,8 +27,24 @@ class TestRoomService(unittest.TestCase):
         mock_conn = MagicMock()
         mock_cur = MagicMock()
         mock_cur.fetchall.return_value = [
-            {'id': 1, 'name': 'Standard', 'base_price': 100.0, 'description': 'Standard room'},
-            {'id': 2, 'name': 'Luxury', 'base_price': 250.0, 'description': 'Luxury room'}
+            {
+                'id': 1,
+                'room_type': 'standard',
+                'name_ru': 'Стандартный',
+                'base_price': 100.0,
+                'description': 'Standard room',
+                'max_guests': 2,
+                'amenities': 'WiFi, TV'
+            },
+            {
+                'id': 2,
+                'room_type': 'luxury',
+                'name_ru': 'Люкс',
+                'base_price': 250.0,
+                'description': 'Luxury room',
+                'max_guests': 4,
+                'amenities': 'WiFi, TV, Minibar'
+            }
         ]
         mock_conn.cursor.return_value = mock_cur
         mock_db.return_value = mock_conn
@@ -36,9 +52,10 @@ class TestRoomService(unittest.TestCase):
         response = self.app.get('/api/rooms/types')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
-        self.assertEqual(len(data), 2)
-        self.assertEqual(data[0]['name'], 'Standard')
-        self.assertEqual(data[1]['name'], 'Luxury')
+        self.assertIn('room_types', data)
+        self.assertEqual(len(data['room_types']), 2)
+        self.assertEqual(data['room_types'][0]['room_type'], 'standard')
+        self.assertEqual(data['room_types'][1]['room_type'], 'luxury')
 
     @patch('app.get_db_connection')
     def test_get_pricing_rules(self, mock_db):
@@ -47,8 +64,18 @@ class TestRoomService(unittest.TestCase):
         mock_conn = MagicMock()
         mock_cur = MagicMock()
         mock_cur.fetchall.return_value = [
-            {'id': 1, 'tariff_name': 'Flexible', 'price_multiplier': 1.2},
-            {'id': 2, 'tariff_name': 'NonRefundable', 'price_multiplier': 0.9}
+            {
+                'tariff_type': 'flexible',
+                'name_ru': 'Гибкий',
+                'multiplier': 1.2,
+                'description': 'Flexible tariff'
+            },
+            {
+                'tariff_type': 'non_refundable',
+                'name_ru': 'Невозвратный',
+                'multiplier': 0.9,
+                'description': 'Non-refundable tariff'
+            }
         ]
         mock_conn.cursor.return_value = mock_cur
         mock_db.return_value = mock_conn
@@ -56,9 +83,10 @@ class TestRoomService(unittest.TestCase):
         response = self.app.get('/api/pricing/tariffs')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
-        self.assertEqual(len(data), 2)
-        self.assertEqual(data[0]['tariff_name'], 'Flexible')
-        self.assertEqual(data[1]['tariff_name'], 'NonRefundable')
+        self.assertIn('tariffs', data)
+        self.assertEqual(len(data['tariffs']), 2)
+        self.assertEqual(data['tariffs'][0]['tariff_type'], 'flexible')
+        self.assertEqual(data['tariffs'][1]['tariff_type'], 'non_refundable')
 
     @patch('app.get_db_connection')
     def test_get_extra_services(self, mock_db):
@@ -67,8 +95,20 @@ class TestRoomService(unittest.TestCase):
         mock_conn = MagicMock()
         mock_cur = MagicMock()
         mock_cur.fetchall.return_value = [
-            {'id': 1, 'service_name': 'minibar', 'price': 50.0, 'is_per_day': False},
-            {'id': 2, 'service_name': 'breakfast', 'price': 20.0, 'is_per_day': True}
+            {
+                'service_code': 'minibar',
+                'name_ru': 'Мини-бар',
+                'price': 50.0,
+                'per_day': False,
+                'description': 'Minibar service'
+            },
+            {
+                'service_code': 'breakfast',
+                'name_ru': 'Завтрак',
+                'price': 20.0,
+                'per_day': True,
+                'description': 'Breakfast service'
+            }
         ]
         mock_conn.cursor.return_value = mock_cur
         mock_db.return_value = mock_conn
@@ -76,9 +116,10 @@ class TestRoomService(unittest.TestCase):
         response = self.app.get('/api/services/extra')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
-        self.assertEqual(len(data), 2)
-        self.assertEqual(data[0]['service_name'], 'minibar')
-        self.assertEqual(data[1]['service_name'], 'breakfast')
+        self.assertIn('extra_services', data)
+        self.assertEqual(len(data['extra_services']), 2)
+        self.assertEqual(data['extra_services'][0]['service_code'], 'minibar')
+        self.assertEqual(data['extra_services'][1]['service_code'], 'breakfast')
 
 
 if __name__ == '__main__':
