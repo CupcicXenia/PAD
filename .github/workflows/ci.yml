@@ -139,12 +139,12 @@ jobs:
     needs: [test-hotel-search, test-booking, test-room, test-notification, test-api-gateway, test-frontend]
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Build all services
         run: |
-          docker-compose build
-      
+          docker compose build
+
       - name: Verify docker-compose
         run: |
-          docker-compose config
+          docker compose config
 
